@@ -1,8 +1,3 @@
-# Contributors
-
-![](https://raw.githubusercontent.com/CMU-313/NodeBB-S24-r4/activity-resources/image.svg)
-
-
 # ![NodeBB](public/images/sm-card.png)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
