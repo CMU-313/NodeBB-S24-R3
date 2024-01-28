@@ -1,6 +1,6 @@
 # Contributors
 
-![]({-ActivityLocation-})
+![](https://raw.githubusercontent.com/CMU-313/NodeBB-S24-r4/activity-resources/image.svg)
 
 
 # ![NodeBB](public/images/sm-card.png)
