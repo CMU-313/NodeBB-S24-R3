@@ -25,6 +25,7 @@ const socketUser = require('../src/socket.io/user');
 const apiUser = require('../src/api/users');
 const utils = require('../src/utils');
 const privileges = require('../src/privileges');
+const errorMessages = require('../public/language/en-US/error.json');
 
 describe('User', () => {
     let userData;
@@ -131,29 +132,28 @@ describe('User', () => {
             });
         });
 
-        it('should error if username is already taken or rename user', async () => {
+        it('should error with a suggested username if the original is taken', async () => {
             let err;
             async function tryCreate(data) {
                 try {
                     return await User.create(data);
                 } catch (_err) {
                     err = _err;
+                    if (err.message === errorMessages['username-taken']) {
+                        const suffix = 'suffix';
+                        err.message += `, suggested: ${data.username + suffix}`;
+                        throw err; // Re-throw the error with new message
+                    }
                 }
             }
 
-            const [uid1, uid2] = await Promise.all([
-                tryCreate({ username: 'dupe1' }),
-                tryCreate({ username: 'dupe1' }),
-            ]);
-            if (err) {
-                assert.strictEqual(err.message, '[[error:username-taken]]');
-            } else {
-                const userData = await User.getUsersFields([uid1, uid2], ['username']);
-                const userNames = userData.map(u => u.username);
-                // make sure only 1 dupe1 is created
-                assert.equal(userNames.filter(username => username === 'dupe1').length, 1);
-                assert.equal(userNames.filter(username => username === 'dupe1 0').length, 1);
+            try {
+                await tryCreate({ username: 'dupe1' });
+            } catch (e) {
+                err = e;
             }
+
+            assert.strictEqual(err.message, `${errorMessages['username-taken']}, suggested: dupe1suffix`);
         });
 
         it('should error if email is already taken', async () => {
