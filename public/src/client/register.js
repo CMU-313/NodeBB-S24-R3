@@ -28,6 +28,11 @@ define('forum/register', [
             $('#yourUsername').text(this.value.length > 0 ? slugify(this.value) : 'username');
         });
 
+        // Update the "password suggestion" text
+        username.on('keyup', function () {
+            $('#usernameSuggest').text(this.value.length > 0 ? slugify(this.value + 'suffix') : 'username');
+        });
+
         username.on('blur', function () {
             if (username.val().length) {
                 validateUsername(username.val());
