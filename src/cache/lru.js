@@ -1,5 +1,5 @@
 'use strict';
-
+// 
 module.exports = function (opts) {
     const LRU = require('lru-cache');
     const pubsub = require('../pubsub');
