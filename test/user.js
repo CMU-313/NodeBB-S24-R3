@@ -131,9 +131,8 @@ describe('User', () => {
             });
         });
 
-        it('should error if username is already taken or rename user', async () => {
-            let err;
-            async function tryCreate(data) {
+        it('should error if username is already taken or rename user', (err) => {
+=            async function tryCreate(data) {
                 try {
                     return await User.create(data);
                 } catch (_err) {
