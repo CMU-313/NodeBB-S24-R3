@@ -24,7 +24,7 @@ module.exports = function (User) {
 
         await User.isDataValid(data);
 
-        await lock(data.username, '[[error:username-taken]]');
+        await lock(data.username, '[[error:username-taken!!!!]] hello use diff username');
         if (data.email && data.email !== data.username) {
             await lock(data.email, '[[error:email-taken]]');
         }
