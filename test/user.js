@@ -25,7 +25,7 @@ const socketUser = require('../src/socket.io/user');
 const apiUser = require('../src/api/users');
 const utils = require('../src/utils');
 const privileges = require('../src/privileges');
-const errorMessages = require('./error.json');
+const errorMessages = require('../public/language/en-US/error.json');
 
 describe('User', () => {
     let userData;
