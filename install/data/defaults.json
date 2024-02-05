@@ -40,7 +40,7 @@
     "allowAccountDelete": 1,
     "privateUploads": 0,
     "allowedFileExtensions": "png,jpg,bmp,txt",
-    "uploadRateLimitThreshold": 10,
+    "uploadRateLimitThreshold": 1000,
     "uploadRateLimitCooldown": 60,
     "allowUserHomePage": 1,
     "allowMultipleBadges": 0,
