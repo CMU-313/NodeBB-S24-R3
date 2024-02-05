@@ -131,7 +131,7 @@ define('forum/register', [
                 if (results.every(obj => obj.status === 'rejected')) {
                     showSuccess(username_notify, successIcon);
                 } else {
-                    showError(username_notify, '[[error:username-taken]]');
+                    showUsernameError(username_notify, '[[error:username-taken]]', username);
                 }
 
                 callback();
@@ -178,6 +178,18 @@ define('forum/register', [
     function showError(element, msg) {
         translator.translate(msg, function (msg) {
             element.html(msg);
+            element.parent()
+                .removeClass('register-success')
+                .addClass('register-danger');
+            element.show();
+        });
+        validationError = true;
+    }
+
+    function showUsernameError(element, msg, username) {
+        translator.translate(msg, function (translated_msg) {
+            const final_msg = `${translated_msg}. Maybe try \"${username}suffix\"`
+            element.html(final_msg);
             element.parent()
                 .removeClass('register-success')
                 .addClass('register-danger');
