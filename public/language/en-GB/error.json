@@ -36,7 +36,7 @@
 
 	"invalid-pagination-value": "Invalid pagination value, must be at least %1 and at most %2",
 
-	"username-taken": "Username taken",
+	"username-taken": "Username taken. Maybe try \"{username-string}suffix",
 	"email-taken": "Email taken",
 	"email-nochange": "The email entered is the same as the email already on file.",
 	"email-invited": "Email was already invited",
