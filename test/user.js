@@ -139,8 +139,8 @@ describe('User', () => {
                 } catch (_err) {
                     err = _err;
                     if (err.message === '[[error:username-taken]]') {
-                        if (attempt < 1) { // Limit the number of retries
-                            const suffix = 'suffix'; // Define your suffix here
+                        if (attempt < 1) { 
+                            const suffix = 'suffix'; 
                             return tryCreate({ username: data.username + suffix }, attempt + 1);
                         }
                     }
@@ -158,7 +158,6 @@ describe('User', () => {
                 const userNames = userData.map(u => u.username);
                 // make sure only 1 dupe1 is created
                 assert.equal(userNames.filter(username => username === 'dupe1').length, 1);
-                // Check for the alternative username with the suffix
                 assert.equal(userNames.filter(username => username === 'dupe1suffix').length, 1);
             }
         });
