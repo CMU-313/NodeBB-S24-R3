@@ -21,7 +21,7 @@ const socketUser = require('../src/socket.io/user');
 const helpers = require('./helpers');
 const file = require('../src/file');
 const image = require('../src/image');
-
+const errorMessages = require('./error.json');
 const emptyUploadsFolder = async () => {
     const files = await fs.readdir(`${nconf.get('upload_path')}/files`);
     await Promise.all(files.map(async (filename) => {
