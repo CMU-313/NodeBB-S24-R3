@@ -146,7 +146,7 @@ describe('User', () => {
                 tryCreate({ username: 'dupe1' }),
             ]);
             if (err) {
-                assert.strictEqual(err.message, '[[error:username-taken]]');
+                assert.strictEqual(err.message, `[[error:username-taken, ${"idk"}]]`);
             } else {
                 const userData = await User.getUsersFields([uid1, uid2], ['username']);
                 const userNames = userData.map(u => u.username);
@@ -2060,7 +2060,7 @@ describe('User', () => {
                 gdpr_consent: true,
             }, (err, jar, res, body) => {
                 assert.ifError(err);
-                assert.equal(body, '[[error:username-taken]]');
+                assert.equal(body, `[[error:username-taken, ${slugify(username)}]]`);
                 done();
             });
         });
