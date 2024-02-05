@@ -131,7 +131,9 @@ define('forum/register', [
                 if (results.every(obj => obj.status === 'rejected')) {
                     showSuccess(username_notify, successIcon);
                 } else {
-                    showError(username_notify, '[[error:username-taken]]');
+                    let suggest = username.concat("suffix");
+                    let msg = 'Username taken. Maybe try "' + suggest + '"';
+                    showError(username_notify, msg);
                 }
 
                 callback();
