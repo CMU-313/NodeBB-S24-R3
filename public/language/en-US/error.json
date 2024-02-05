@@ -13,7 +13,7 @@
     "invalid-uid": "Invalid User ID",
     "invalid-mid": "Invalid Chat Message ID",
     "invalid-date": "A valid date must be provided",
-    "invalid-username": "Invalid Username",
+    "invalid-username": "Invalid Username, try %1",
     "invalid-email": "Invalid Email",
     "invalid-fullname": "Invalid Fullname",
     "invalid-location": "Invalid Location",
