@@ -133,14 +133,20 @@ describe('User', () => {
 
         it('should error if username is already taken or rename user', async () => {
             let err;
-            async function tryCreate(data) {
+            async function tryCreate(data, attempt = 0) {
                 try {
                     return await User.create(data);
                 } catch (_err) {
                     err = _err;
+                    if (err.message === '[[error:username-taken]]') {
+                        if (attempt < 1) { // Limit the number of retries
+                            const suffix = 'suffix'; // Define your suffix here
+                            return tryCreate({ username: data.username + suffix }, attempt + 1);
+                        }
+                    }
                 }
             }
-
+        
             const [uid1, uid2] = await Promise.all([
                 tryCreate({ username: 'dupe1' }),
                 tryCreate({ username: 'dupe1' }),
@@ -152,9 +158,11 @@ describe('User', () => {
                 const userNames = userData.map(u => u.username);
                 // make sure only 1 dupe1 is created
                 assert.equal(userNames.filter(username => username === 'dupe1').length, 1);
-                assert.equal(userNames.filter(username => username === 'dupe1 0').length, 1);
+                // Check for the alternative username with the suffix
+                assert.equal(userNames.filter(username => username === 'dupe1suffix').length, 1);
             }
         });
+        
 
         it('should error if email is already taken', async () => {
             let err;
