@@ -126,8 +126,9 @@ module.exports = function (User) {
             return;
         }
         const exists = await User.existsBySlug(userslug);
+        const new_username = `${data.username}${Math.floor(Math.random() * 1000)}`;
         if (exists) {
-            throw new Error('[[error:username-taken]]');
+            throw new Error('[[error:username-taken, data.username, new_username]]');
         }
 
         const { error } = await plugins.hooks.fire('filter:username.check', {
