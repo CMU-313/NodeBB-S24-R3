@@ -23,8 +23,12 @@ module.exports = function (User) {
         }
 
         await User.isDataValid(data);
+        while (isUsernameTaken(suggestedUsername)) {
+            suggestedUsername = `${originalUsername}${counter}`;
+            counter++;
+        }
 
-        await lock(data.username, '[[error:username-taken]]');
+        await lock(data.username, '[[error:username-taken]]' + `Maybe try ${suggestedUsername}`);
         if (data.email && data.email !== data.username) {
             await lock(data.email, '[[error:email-taken]]');
         }
