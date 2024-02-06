@@ -19,39 +19,34 @@ uploadsController.upload = async function (req, res, filesIterator) {
     let files;
     try {
         files = req.files.files;
-        if (!Array.isArray(files)) {
-            throw new Error('Invalid file format');
-        }
-        if (Array.isArray(files[0])) {
-            files = files[0];
-        }
     } catch (e) {
-        console.error('Error processing uploaded files:', e);
-        return helpers.formatApiResponse(400, res, e.message || 'Invalid file upload');
+        return helpers.formatApiResponse(400, res);
+    }
+
+    // These checks added because of odd behaviour by request: https://github.com/request/request/issues/2445
+    if (!Array.isArray(files)) {
+        return helpers.formatApiResponse(500, res, new Error('[[error:invalid-file]]'));
+    }
+    if (Array.isArray(files[0])) {
+        files = files[0];
     }
 
     try {
         const images = [];
         for (const fileObj of files) {
             /* eslint-disable no-await-in-loop */
-            try {
-                const uploadedImage = await filesIterator(fileObj);
-                images.push(uploadedImage);
-            } catch (fileError) {
-                console.error('Error uploading file:', fileObj.name, fileError);
-                // Optionally continue with the next file, or return an error response
-            }
+            images.push(await filesIterator(fileObj));
         }
 
         helpers.formatApiResponse(200, res, { images });
+
+        return images;
     } catch (err) {
-        console.error('Unhandled error in upload function:', err);
-        return helpers.formatApiResponse(200, res, 'Error uploading files');
+        return helpers.formatApiResponse(500, res, err);
     } finally {
         deleteTempFiles(files);
     }
 };
-
 
 uploadsController.uploadPost = async function (req, res) {
     await uploadsController.upload(req, res, async (uploadedFile) => {
@@ -68,7 +63,6 @@ async function uploadAsImage(req, uploadedFile) {
     if (!canUpload) {
         throw new Error('[[error:no-privileges]]');
     }
-    
     await image.checkDimensions(uploadedFile.path);
     await image.stripEXIF(uploadedFile.path);
 
@@ -79,9 +73,6 @@ async function uploadAsImage(req, uploadedFile) {
             folder: 'files',
         });
     }
-    await image.isFileTypeAllowed(uploadedFile.path);
-    await image.checkDimensions(uploadedFile.path);
-    await image.stripEXIF(uploadedFile.path);
     await image.isFileTypeAllowed(uploadedFile.path);
 
     let fileObj = await uploadsController.uploadFile(req.uid, uploadedFile);
@@ -170,17 +161,18 @@ uploadsController.uploadFile = async function (uid, uploadedFile) {
     }
 
     if (!uploadedFile) {
-        throw new Error('No file uploaded');
+        throw new Error('[[error:invalid-file]]');
     }
-    // File size check
+
     if (uploadedFile.size > meta.config.maximumFileSize * 1024) {
-        throw new Error(`File too large. Maximum size allowed is ${meta.config.maximumFileSize}KB`);
+        throw new Error(`[[error:file-too-big, ${meta.config.maximumFileSize}]]`);
     }
-    // File type check
-    const extension = path.extname(uploadedFile.name).toLowerCase();
+
     const allowed = file.allowedExtensions();
-    if (allowed.length > 0 && (!extension || !allowed.includes(extension))) {
-        throw new Error('Unsupported file type');
+
+    const extension = path.extname(uploadedFile.name).toLowerCase();
+    if (allowed.length > 0 && (!extension || extension === '.' || !allowed.includes(extension))) {
+        throw new Error(`[[error:invalid-file-type, ${allowed.join('&#44; ')}]]`);
     }
 
     return await saveFileToLocal(uid, 'files', uploadedFile);
