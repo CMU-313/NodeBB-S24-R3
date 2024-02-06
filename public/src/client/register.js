@@ -113,7 +113,7 @@ define('forum/register', [
 
     function validateUsername(username, callback) {
         callback = callback || function () {};
-
+    
         const username_notify = $('#username-notify');
         const userslug = slugify(username);
         if (username.length < ajaxify.data.minimumUsernameLength ||
@@ -125,18 +125,28 @@ define('forum/register', [
             showError(username_notify, '[[error:invalid-username]]');
         } else {
             Promise.allSettled([
-                api.head(`/users/bySlug/${username}`, {}),
-                api.head(`/groups/${username}`, {}),
+                api.head(`/users/bySlug/${userslug}`, {}),
+                api.head(`/groups/${userslug}`, {}),
             ]).then((results) => {
                 if (results.every(obj => obj.status === 'rejected')) {
                     showSuccess(username_notify, successIcon);
                 } else {
-                    showError(username_notify, '[[error:username-taken]]');
+                    // Username is taken, suggest an alternative
+                    const suggestedUsername = suggestAlternativeUsername(username);
+                    // Translate and show the message with suggested username
+                    const errorMsgKey = '[[error:username-taken, ' + suggestedUsername + ']]'; // Ensure this key/format works with your i18n system
+                    showError(username_notify, errorMsgKey);
                 }
-
+    
                 callback();
             });
         }
+    }
+
+    function suggestAlternativeUsername(baseUsername) {
+        // Simple suggestion logic, can be replaced with a more sophisticated algorithm
+        const randomNumber = Math.floor(Math.random() * 1000); // Random number for example
+        return baseUsername + randomNumber;
     }
 
     function validatePassword(password, password_confirm) {
